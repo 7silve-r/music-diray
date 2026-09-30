@@ -22,7 +22,7 @@ public class Result<T> {
         return new Result<>(200, "success", data);
     }
 
-    public static <T> Result<T> error(String message) {
-        return new Result<>(400, message, null);
+    public static <T> Result<T> error(Integer code, String message) {
+        return new Result<>(code, message, null);
     }
 }
