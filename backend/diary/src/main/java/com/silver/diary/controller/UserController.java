@@ -3,15 +3,18 @@ package com.silver.diary.controller;
 import com.silver.diary.common.Result;
 import com.silver.diary.dto.LoginDto;
 import com.silver.diary.dto.RegisterDto;
+import com.silver.diary.dto.UserProfileUpdateDto;
+import com.silver.diary.dto.UserPwdUpdateDto;
 import com.silver.diary.entity.User;
 import com.silver.diary.exception.BusinessException;
 import com.silver.diary.service.UserService;
 import com.silver.diary.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class UserController {
@@ -63,5 +66,56 @@ public class UserController {
             throw new BusinessException("用户名或密码错误");
         }
         return Result.success(jwtUtil.generateToken(dto.getUsername()));
+    }
+
+    /**
+     * 更新资料
+     */
+    @PatchMapping("/my/profile")
+    public Result<Void> updateProfile(@RequestHeader("Authorization") String token,
+                                      @RequestBody UserProfileUpdateDto dto) {
+        String username = jwtUtil.getUsername(token);
+        User user = userService.lambdaQuery().eq(User::getUsername, username).one();
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "账号不存在，请重新登录");
+        }
+        user.setNickname(dto.getNickname());
+        user.setEmail(dto.getEmail());
+        if (!userService.updateById(user)) {
+            throw new BusinessException("操作未完成，数据可能以变化，请刷新后重试");
+        }
+        return Result.success();
+    }
+
+    /**
+     * 更新密码
+     */
+    @PatchMapping("/my/password")
+    public Result<Void> updatePassword(@RequestHeader("Authorization") String token,
+                                       @RequestBody UserPwdUpdateDto dto) {
+        String username = jwtUtil.getUsername(token);
+        User user = userService.lambdaQuery().eq(User::getUsername, username).one();
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "账号不存在，请重新登录");
+        }
+        if (dto.getOldPwd() == null ||
+            !passwordEncoder.matches(dto.getOldPwd(), user.getPassword())) {
+            throw new BusinessException("原密码错误");
+        }
+        if (dto.getNewPwd() == null ||
+            dto.getNewPwd().length() < 8 ||
+            dto.getNewPwd().length() > 64) {
+            throw new BusinessException("新密码需8到64位");
+        }
+        if (!dto.getReNewPwd().equals(dto.getNewPwd())) {
+            throw new BusinessException("两次密码不一致");
+        }
+        user.setPassword(dto.getNewPwd());
+        if (!userService.updateById(user)) {
+            throw new BusinessException("操作未完成，数据可能已变化，请刷新后重试");
+        }
+        return Result.success();
     }
 }
