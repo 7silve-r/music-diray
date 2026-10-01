@@ -8,6 +8,8 @@ import com.silver.diary.dto.UserPwdUpdateDto;
 import com.silver.diary.entity.User;
 import com.silver.diary.exception.BusinessException;
 import com.silver.diary.service.UserService;
+import com.silver.diary.upload.UploadResult;
+import com.silver.diary.upload.UploadService;
 import com.silver.diary.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
 
 @RestController
 public class UserController {
@@ -25,6 +29,9 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UploadService uploadService;
 
     /**
      * 注册
@@ -66,6 +73,21 @@ public class UserController {
             throw new BusinessException("用户名或密码错误");
         }
         return Result.success(jwtUtil.generateToken(dto.getUsername()));
+    }
+
+    /**
+     * 获取个人信息
+     */
+    @GetMapping("/my/userinfo")
+    public Result<User> getUserInfo(@RequestHeader("Authorization") String token) {
+        String username = jwtUtil.getUsername(token);
+        User user = userService.lambdaQuery().eq(User::getUsername, username).one();
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "账号不存在，请重新登录");
+        }
+        user.setPassword(null);
+        return Result.success(user);
     }
 
     /**
@@ -117,5 +139,14 @@ public class UserController {
             throw new BusinessException("操作未完成，数据可能已变化，请刷新后重试");
         }
         return Result.success();
+    }
+
+    /**
+     * 更新头像
+     */
+    @PatchMapping(value = "/my/avator", consumes = "multipart/form-data")
+    public Result<UploadResult> updateAvatar(@RequestHeader("Authorization") String token,
+                                             @RequestParam("file") MultipartFile file) throws IOException {
+        return Result.success(uploadService.avatar(jwtUtil.getUsername(token), file));
     }
 }
