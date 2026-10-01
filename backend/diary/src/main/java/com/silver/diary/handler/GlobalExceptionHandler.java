@@ -2,6 +2,7 @@ package com.silver.diary.handler;
 
 import com.silver.diary.common.Result;
 import com.silver.diary.exception.BusinessException;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -22,38 +23,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({org.springframework.dao.DataIntegrityViolationException.class,
             java.sql.SQLIntegrityConstraintViolationException.class})
-    public ResponseEntity<Object> handleConflict(Exception ex) {
+    public ResponseEntity<Result<Void>> handleConflict(Exception ex) {
         log.warn("数据约束冲突", ex);
         return ResponseEntity.status(409).body(error(409, "数据重复或仍被引用，请刷新后重试"));
     }
 
     @ExceptionHandler(org.springframework.dao.DataAccessException.class)
-    public ResponseEntity<Object> handleDatabase(Exception ex) {
+    public ResponseEntity<Result<Void>> handleDatabase(Exception ex) {
         log.error("数据库访问失败", ex);
         return ResponseEntity.status(503).body(error(503, "数据服务暂不可用，请稍后重试"));
     }
 
     @ExceptionHandler(java.io.IOException.class)
-    public ResponseEntity<Object> handleFile(Exception ex) {
+    public ResponseEntity<Result<Void>> handleFile(Exception ex) {
         log.error("文件读写失败", ex);
         return ResponseEntity.status(500).body(error(500, "文件处理失败，请稍后重试"));
     }
 
     @ExceptionHandler(org.springframework.web.multipart.MultipartException.class)
-    public ResponseEntity<Object> handleMultipart(Exception ex) {
+    public ResponseEntity<Result<Void>> handleMultipart(Exception ex) {
         return ResponseEntity.badRequest().body(error(400, "上传请求格式错误，请重新选择文件"));
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Object> handleBusiness(BusinessException ex) {
-        return ResponseEntity.badRequest().body(error(400, ex.getMessage()));
+    public ResponseEntity<Result<Void>> handleBusiness(BusinessException ex) {
+        return ResponseEntity.status(ex.getCode()).body(error(ex.getCode(), ex.getMessage()));
     }
 
     // Spring MVC 将参数绑定、JSON 解析、请求方式和状态异常等交给这里处理。
+    // 父类要求 ResponseEntity<Object>；Java 泛型不允许改成 ResponseEntity<Result<Void>>。
+    // 仅这个框架适配方法保留签名，实际 body 始终为 Result<Void>。
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
-            Exception ex, Object body, HttpHeaders headers,
-            HttpStatusCode status, WebRequest request) {
+            @NonNull Exception ex, Object body, @NonNull HttpHeaders headers,
+            HttpStatusCode status, @NonNull WebRequest request) {
         String message = switch (status.value()) {
             case 400 -> "请求参数缺失或格式错误";
             case 401 -> "请先登录再操作";
@@ -87,7 +90,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleUnexpected(Exception ex) {
+    public ResponseEntity<Result<Void>> handleUnexpected(Exception ex) {
         log.error("未处理的服务端异常", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error(500, "服务器内部错误，请稍后重试"));
