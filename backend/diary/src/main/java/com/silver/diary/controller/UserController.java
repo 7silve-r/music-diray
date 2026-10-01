@@ -1,6 +1,7 @@
 package com.silver.diary.controller;
 
 import com.silver.diary.common.Result;
+import com.silver.diary.dto.LoginDto;
 import com.silver.diary.dto.RegisterDto;
 import com.silver.diary.entity.User;
 import com.silver.diary.exception.BusinessException;
@@ -25,7 +26,7 @@ public class UserController {
     /**
      * 注册
      */
-    @PostMapping("api/reg")
+    @PostMapping("/api/reg")
     public Result<Void> register(@RequestBody RegisterDto dto) {
         if (dto.getUsername() == null
                 || !dto.getUsername().matches("[a-zA-Z0-9_]{5,30}")
@@ -46,5 +47,21 @@ public class UserController {
             throw new BusinessException("操作未完成，数据可能已变化，请刷新后重试");
         }
         return Result.success();
+    }
+
+    /**
+     *  登录
+     */
+    @PostMapping("/api/login")
+    public Result<String> login(@RequestBody LoginDto dto) {
+        User user = userService.lambdaQuery()
+                .eq(User::getUsername, dto.getUsername())
+                .one();
+        if (user == null ||
+            dto.getPassword() == null ||
+            !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new BusinessException("用户名或密码错误");
+        }
+        return Result.success(jwtUtil.generateToken(dto.getUsername()));
     }
 }
