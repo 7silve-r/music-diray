@@ -20,7 +20,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NonNull HttpServletRequest request,
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) throws Exception {
-        String token = request.getHeader("token");
+        String token = request.getHeader("Authorization");
         if (token == null || token.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "请先登录再操作");
         }

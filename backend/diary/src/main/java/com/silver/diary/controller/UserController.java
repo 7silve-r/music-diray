@@ -131,10 +131,10 @@ public class UserController {
             dto.getNewPwd().length() > 64) {
             throw new BusinessException("新密码需8到64位");
         }
-        if (!dto.getReNewPwd().equals(dto.getNewPwd())) {
+        if (!dto.getNewPwd().equals(dto.getReNewPwd())) {
             throw new BusinessException("两次密码不一致");
         }
-        user.setPassword(dto.getNewPwd());
+        user.setPassword(passwordEncoder.encode(dto.getNewPwd()));
         if (!userService.updateById(user)) {
             throw new BusinessException("操作未完成，数据可能已变化，请刷新后重试");
         }

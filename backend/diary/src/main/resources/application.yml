@@ -23,4 +23,6 @@ jwt:
   secret: ${DIARY_JWT_SECRET}
   expiration: 86400000
 
-
+file:
+  upload-dir: ${DIARY_UPLOAD_DIR:./uploads/}
+  access-url-prefix: ${DIARY_UPLOAD_URL_PREFIX:/uploads/}
