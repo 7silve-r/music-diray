@@ -58,7 +58,7 @@ Desktop.ini
 *.log
 **/logs/
 /runtime/
-/uploads/
+**/uploads/
 
 # =========================
 # 测试运行结果

@@ -1,5 +1,7 @@
 package com.silver.diary.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.silver.diary.common.PageResult;
@@ -28,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/my")
 public class ArticleController {

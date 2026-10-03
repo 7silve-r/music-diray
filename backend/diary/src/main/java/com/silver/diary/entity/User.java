@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-
 @Data
 @TableName("user")
 public class User {
@@ -20,6 +19,7 @@ public class User {
     private String password;
     private String nickname;
     private String email;
+    private Boolean emailVerified = false;
     private String userPic;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

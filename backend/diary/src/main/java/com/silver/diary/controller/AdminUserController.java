@@ -10,14 +10,18 @@ import com.silver.diary.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminUserController {
-    @Autowired private UserService userService;
-    @Autowired private com.silver.diary.service.ArticleService articleService;
-    @Autowired private UserController userController;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private com.silver.diary.service.ArticleService articleService;
+    @Autowired
+    private UserController userController;
 
     @GetMapping
     public Result<PageResult<User>> list(@RequestParam(defaultValue = "1") Integer pageNum,
@@ -43,6 +47,7 @@ public class AdminUserController {
     public Result<Void> update(@PathVariable Integer id, @RequestBody UserProfileUpdateDto dto) {
         User user = user(id);
         user.setNickname(dto.getNickname()); user.setEmail(dto.getEmail());
+        user.setEmailVerified(false);
         if (!userService.updateById(user)) throw new BusinessException("账号更新失败");
         return Result.success();
     }
@@ -56,9 +61,15 @@ public class AdminUserController {
         return Result.success();
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Integer id) {
         user(id);
+        userService.lambdaQuery().eq(User::getId, id).last("FOR UPDATE").one();
+        if (articleService.lambdaQuery().eq(com.silver.diary.entity.Article::getCreateUser, id)
+                .last("FOR UPDATE").list().stream().anyMatch(article -> "私有".equals(article.getState()))) {
+            throw new BusinessException(403, "该账号存在私有日记，只能停用，不能删除");
+        }
         if (!userService.removeById(id)) throw new BusinessException("账号删除失败");
         return Result.success();
     }

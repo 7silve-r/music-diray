@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ArticleSocialController {
-    @Autowired private ArticleSocialService articleSocialService;
+    @Autowired
+    private ArticleSocialService articleSocialService;
 
     @GetMapping("/public/articles")
     public Result<PageResult<ArticleVO>> list(@RequestParam(defaultValue = "1") Integer pageNum,

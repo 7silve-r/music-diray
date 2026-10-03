@@ -1,13 +1,13 @@
-package com.silver.diary;
+package com.silver.music;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-@MapperScan("com.silver.diary.mapper")
-public class DiaryApplication {
+@SpringBootApplication(scanBasePackages = "com.silver")
+@MapperScan("com.silver.music.mapper")
+public class MusicApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DiaryApplication.class, args);
+        SpringApplication.run(MusicApplication.class, args);
     }
 }

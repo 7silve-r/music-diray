@@ -1,5 +1,7 @@
 package com.silver.diary.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.silver.diary.common.Result;
 import com.silver.diary.dto.LoginDto;
 import com.silver.diary.dto.RegisterDto;
@@ -80,7 +82,7 @@ public class UserController {
     /**
      * 获取个人信息
      */
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/my/userinfo")
     public Result<User> getUserInfo(@RequestHeader("Authorization") String token) {
         String username = jwtUtil.getUsername(token);
@@ -96,7 +98,7 @@ public class UserController {
     /**
      * 更新资料
      */
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/my/profile")
     public Result<Void> updateProfile(@RequestHeader("Authorization") String token,
                                       @RequestBody UserProfileUpdateDto dto) {
@@ -108,6 +110,7 @@ public class UserController {
         }
         user.setNickname(dto.getNickname());
         user.setEmail(dto.getEmail());
+        user.setEmailVerified(false);
         if (!userService.updateById(user)) {
             throw new BusinessException("操作未完成，数据可能以变化，请刷新后重试");
         }
@@ -117,7 +120,7 @@ public class UserController {
     /**
      * 更新密码
      */
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/my/password")
     public Result<Void> updatePassword(@RequestHeader("Authorization") String token,
                                        @RequestBody UserPwdUpdateDto dto) {
@@ -150,14 +153,14 @@ public class UserController {
     /**
      * 更新头像
      */
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/my/avator", consumes = "multipart/form-data")
     public Result<UploadResult> updateAvatar(@RequestHeader("Authorization") String token,
                                              @RequestParam("file") MultipartFile file) throws IOException {
         return Result.success(uploadService.avatar(jwtUtil.getUsername(token), file));
     }
     @PostMapping("/my/logout")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER')")
     public Result<Void> logout() {
         if (!userService.lambdaUpdate().eq(User::getId, com.silver.diary.utils.SecurityUtil.userId())
                 .setSql("token_version = token_version + 1").update()) {
@@ -166,7 +169,7 @@ public class UserController {
         return Result.success();
     }
     @DeleteMapping("/my/account")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER') and !hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') and !hasRole('ADMIN')")
     public Result<Void> delete() {
         if (!userService.removeById(com.silver.diary.utils.SecurityUtil.userId())) throw new BusinessException("账号注销失败");
         return Result.success();

@@ -1,0 +1,177 @@
+CREATE TABLE IF NOT EXISTS `user` (
+id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30) UNIQUE, password VARCHAR(255),
+nickname VARCHAR(100), email VARCHAR(254) UNIQUE, email_verified BOOLEAN DEFAULT FALSE, user_pic VARCHAR(512), role VARCHAR(10) DEFAULT 'USER',
+status INT DEFAULT 0, token_version INT DEFAULT 0, create_time TIMESTAMP, update_time TIMESTAMP);
+
+CREATE TABLE IF NOT EXISTS category (id INT AUTO_INCREMENT PRIMARY KEY, cate_name VARCHAR(50), cate_alias VARCHAR(50), create_user INT, create_time TIMESTAMP, update_time TIMESTAMP);
+CREATE TABLE IF NOT EXISTS article (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(200), cate_id INT, cover_img VARCHAR(512), content CLOB, state VARCHAR(10), create_user INT, create_time TIMESTAMP, update_time TIMESTAMP);
+
+CREATE TABLE IF NOT EXISTS article_like (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
+    ,
+    UNIQUE (article_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS article_favorite (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
+    ,
+    UNIQUE (article_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS article_comment (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    user_id INT NOT NULL,
+    content VARCHAR(255) NOT NULL, create_time TIMESTAMP NOT NULL,
+    FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
+
+
+);
+
+CREATE TABLE IF NOT EXISTS article_comment_like (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    FOREIGN KEY (comment_id) REFERENCES article_comment(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
+    ,
+    UNIQUE (comment_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS email_code (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(254) NOT NULL,
+  purpose VARCHAR(10) NOT NULL,
+  code VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  sent_at TIMESTAMP NOT NULL,
+  attempts INT NOT NULL DEFAULT 0,
+  UNIQUE (email, purpose)
+);
+
+CREATE TABLE IF NOT EXISTS tb_artist (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`name` varchar(100) NOT NULL,
+`gender` int NULL DEFAULT NULL,
+`avatar` varchar(255) NULL DEFAULT NULL,
+`birth` date NULL DEFAULT NULL,
+`area` varchar(30) NULL DEFAULT NULL,
+`introduction` varchar(255) NULL DEFAULT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_banner (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`banner_url` varchar(255) NOT NULL,
+`status` tinyint NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_comment (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`user_id` int NOT NULL,
+`song_id` bigint NULL DEFAULT NULL,
+`playlist_id` bigint NULL DEFAULT NULL,
+`content` varchar(255) NOT NULL,
+`create_time` datetime NOT NULL,
+`type` tinyint NOT NULL,
+`like_count` bigint NULL DEFAULT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_feedback (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`user_id` int NOT NULL,
+`feedback` varchar(255) NOT NULL,
+`create_time` datetime NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_genre (
+`song_id` bigint NOT NULL,
+`style_id` bigint NOT NULL,
+PRIMARY KEY (`song_id`, `style_id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_playlist (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`title` varchar(255) NOT NULL,
+`cover_url` varchar(255) NULL DEFAULT NULL,
+`introduction` text NULL,
+`style` varchar(255) NULL DEFAULT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_playlist_binding (
+`playlist_id` bigint NOT NULL,
+`song_id` bigint NOT NULL,
+PRIMARY KEY (`playlist_id`, `song_id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_song (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`artist_id` bigint NOT NULL,
+`name` varchar(255) NOT NULL,
+`album` varchar(255) NOT NULL,
+`lyric` text NULL,
+`duration` varchar(10) NULL DEFAULT NULL,
+`style` varchar(255) NULL DEFAULT NULL,
+`cover_url` varchar(255) NULL DEFAULT NULL,
+`audio_url` varchar(255) NULL DEFAULT NULL,
+`release_time` date NOT NULL,
+PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_style (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`name` varchar(50) NOT NULL,
+PRIMARY KEY (`id`),
+UNIQUE(`name`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_user_favorite (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`user_id` int NOT NULL,
+`type` tinyint NOT NULL,
+`song_id` bigint NULL DEFAULT NULL,
+`playlist_id` bigint NULL DEFAULT NULL,
+`create_time` datetime NOT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY favorite_song (user_id, song_id),
+UNIQUE KEY favorite_playlist (user_id, playlist_id)
+);
+
+CREATE TABLE IF NOT EXISTS tb_comment_like (
+`id` bigint NOT NULL AUTO_INCREMENT,
+`comment_id` bigint NOT NULL,
+`user_id` int NOT NULL,
+PRIMARY KEY (`id`),
+UNIQUE KEY comment_user (`comment_id`, `user_id`)
+);
+
+ALTER TABLE tb_comment ADD CONSTRAINT `fk_comment_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_comment ADD CONSTRAINT `fk_comment_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_comment ADD CONSTRAINT `fk_comment_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_feedback ADD CONSTRAINT `fk_feedback_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_genre ADD CONSTRAINT `fk_genre_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE tb_genre ADD CONSTRAINT `fk_genre_style_id` FOREIGN KEY (`style_id`) REFERENCES `tb_style` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE tb_playlist_binding ADD CONSTRAINT `fk_playlist_binding_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE tb_playlist_binding ADD CONSTRAINT `fk_playlist_binding_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE tb_song ADD CONSTRAINT `fk_song_artist_id` FOREIGN KEY (`artist_id`) REFERENCES `tb_artist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_user_favorite ADD CONSTRAINT `fk_user_favorite_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_user_favorite ADD CONSTRAINT `fk_user_favorite_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_user_favorite ADD CONSTRAINT `fk_user_favorite_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE tb_comment_like ADD CONSTRAINT comment_like_comment FOREIGN KEY (`comment_id`) REFERENCES `tb_comment` (`id`) ON DELETE CASCADE;
+ALTER TABLE tb_comment_like ADD CONSTRAINT comment_like_user FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;

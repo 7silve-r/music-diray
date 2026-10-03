@@ -1,5 +1,7 @@
 package com.silver.diary.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import com.silver.diary.common.Result;
 import com.silver.diary.entity.Article;
 import com.silver.diary.entity.Category;
@@ -17,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/my/cate")
 public class CategoryController {
