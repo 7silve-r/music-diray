@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/my/cate")
 public class CategoryController {

@@ -67,7 +67,7 @@ class UserControllerTest {
         assertThrows(BusinessException.class, () -> controller.register(reg()));
     }
     @Test void loginOk() {
-        account(); when(jwt.generateToken("writer01")).thenReturn("signed-token");
+        account(); when(jwt.generateToken("writer01", 0)).thenReturn("signed-token");
         assertEquals("signed-token", controller.login(login()).getData());
     }
     @Test void badPwd() {

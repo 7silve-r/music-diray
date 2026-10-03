@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/my")
 public class ArticleController {

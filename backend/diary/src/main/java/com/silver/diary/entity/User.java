@@ -14,6 +14,9 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Integer id;
     private String username;
+    private String role = "USER";
+    private Integer status = 0;
+    private Integer tokenVersion = 0;
     private String password;
     private String nickname;
     private String email;

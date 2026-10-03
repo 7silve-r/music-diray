@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS `user` (
+id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30) UNIQUE, password VARCHAR(255),
+nickname VARCHAR(100), email VARCHAR(254), user_pic VARCHAR(512), role VARCHAR(10) DEFAULT 'USER',
+status INT DEFAULT 0, token_version INT DEFAULT 0, create_time TIMESTAMP, update_time TIMESTAMP);

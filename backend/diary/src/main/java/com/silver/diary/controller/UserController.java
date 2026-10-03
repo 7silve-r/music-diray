@@ -50,6 +50,7 @@ public class UserController {
         if(!dto.getPassword().equals(dto.getRePassword())){
             throw new BusinessException("两次密码不一致");
         }
+        if ("ADMIN".equalsIgnoreCase(dto.getUsername())) throw new BusinessException("该用户名不可注册");
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -72,12 +73,14 @@ public class UserController {
             !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new BusinessException("用户名或密码错误");
         }
-        return Result.success(jwtUtil.generateToken(dto.getUsername()));
+        if (!Integer.valueOf(0).equals(user.getStatus())) throw new BusinessException(403, "账号已停用");
+        return Result.success(jwtUtil.generateToken(dto.getUsername(), user.getTokenVersion()));
     }
 
     /**
      * 获取个人信息
      */
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
     @GetMapping("/my/userinfo")
     public Result<User> getUserInfo(@RequestHeader("Authorization") String token) {
         String username = jwtUtil.getUsername(token);
@@ -93,6 +96,7 @@ public class UserController {
     /**
      * 更新资料
      */
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
     @PatchMapping("/my/profile")
     public Result<Void> updateProfile(@RequestHeader("Authorization") String token,
                                       @RequestBody UserProfileUpdateDto dto) {
@@ -113,6 +117,7 @@ public class UserController {
     /**
      * 更新密码
      */
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
     @PatchMapping("/my/password")
     public Result<Void> updatePassword(@RequestHeader("Authorization") String token,
                                        @RequestBody UserPwdUpdateDto dto) {
@@ -135,6 +140,7 @@ public class UserController {
             throw new BusinessException("两次密码不一致");
         }
         user.setPassword(passwordEncoder.encode(dto.getNewPwd()));
+        user.setTokenVersion(user.getTokenVersion() + 1);
         if (!userService.updateById(user)) {
             throw new BusinessException("操作未完成，数据可能已变化，请刷新后重试");
         }
@@ -144,9 +150,19 @@ public class UserController {
     /**
      * 更新头像
      */
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
     @PatchMapping(value = "/my/avator", consumes = "multipart/form-data")
     public Result<UploadResult> updateAvatar(@RequestHeader("Authorization") String token,
                                              @RequestParam("file") MultipartFile file) throws IOException {
         return Result.success(uploadService.avatar(jwtUtil.getUsername(token), file));
+    }
+    @PostMapping("/my/logout")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
+    public Result<Void> logout() {
+        if (!userService.lambdaUpdate().eq(User::getId, com.silver.diary.utils.SecurityUtil.userId())
+                .setSql("token_version = token_version + 1").update()) {
+            throw new BusinessException("退出失败");
+        }
+        return Result.success();
     }
 }

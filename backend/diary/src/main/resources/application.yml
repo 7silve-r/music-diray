@@ -1,3 +1,6 @@
+admin:
+  password: ${ADMIN_PASSWORD:}
+
 server:
   address: 127.0.0.1
   port: ${DIARY_PORT:8081}
