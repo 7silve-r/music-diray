@@ -19,7 +19,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain security(HttpSecurity http, JwtUtil jwt, UserService users,
-            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) throws Exception {
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
+            @org.springframework.beans.factory.annotation.Value("${file.access-url-prefix}") String filePrefix) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .cors(cors -> { })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -27,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error", "/api/reg", "/api/login", "/public/**",
                                 "/music/public/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, filePrefix + "**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((req, res, ex) -> resolver.resolveException(req, res, null,

@@ -71,6 +71,13 @@ class SecurityTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test void protectAdmin() throws Exception {
+        mvc.perform(delete("/admin/users/2").header("Authorization", jwt.generateToken("ADMIN")))
+                .andExpect(status().isForbidden());
+        mvc.perform(delete("/my/account").header("Authorization", jwt.generateToken("ADMIN")))
+                .andExpect(status().isForbidden());
+    }
+
     @TestConfiguration
     static class Config {
         @Bean Probe probe() { return new Probe(); }

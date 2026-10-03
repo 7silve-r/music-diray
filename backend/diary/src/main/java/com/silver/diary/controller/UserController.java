@@ -165,4 +165,10 @@ public class UserController {
         }
         return Result.success();
     }
+    @DeleteMapping("/my/account")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('USER') and !hasRole('ADMIN')")
+    public Result<Void> delete() {
+        if (!userService.removeById(com.silver.diary.utils.SecurityUtil.userId())) throw new BusinessException("账号注销失败");
+        return Result.success();
+    }
 }
