@@ -18,7 +18,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = {DiaryApplication.class, SecurityTest.Config.class})
+@SpringBootTest(classes = {DiaryTestApplication.class, SecurityTest.Config.class})
 @ActiveProfiles("test")
 class SecurityTest {
     @Autowired WebApplicationContext context;

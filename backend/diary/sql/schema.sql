@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS article_like (
     id INT PRIMARY KEY AUTO_INCREMENT,
     article_id INT NOT NULL,
     user_id INT NOT NULL,
-    
+
     FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
     ,
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS article_favorite (
     id INT PRIMARY KEY AUTO_INCREMENT,
     article_id INT NOT NULL,
     user_id INT NOT NULL,
-    
+
     FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
     ,
@@ -68,15 +68,15 @@ CREATE TABLE IF NOT EXISTS article_comment (
     content VARCHAR(255) NOT NULL, create_time TIMESTAMP NOT NULL,
     FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
-    
-    
+
+
 );
 
 CREATE TABLE IF NOT EXISTS article_comment_like (
     id INT PRIMARY KEY AUTO_INCREMENT,
     comment_id INT NOT NULL,
     user_id INT NOT NULL,
-    
+
     FOREIGN KEY (comment_id) REFERENCES article_comment(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
     ,
