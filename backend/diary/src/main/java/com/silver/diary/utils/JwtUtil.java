@@ -23,7 +23,12 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
+        return generateToken(username, 0);
+    }
+
+    public String generateToken(String username, Integer version) {
         return Jwts.builder()
+                .claim("version", version)
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -35,15 +40,23 @@ public class JwtUtil {
         Jwts.parser()
                 .verifyWith( getSigningKey() )
                 .build()
-                .parseSignedClaims(token);
+                .parseSignedClaims(normalize(token));
     }
 
     public String getUsername(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(normalize(token))
                 .getPayload()
                 .getSubject();
+    }
+    public Integer getVersion(String token) {
+        return Jwts.parser().verifyWith(getSigningKey()).build()
+                .parseSignedClaims(normalize(token)).getPayload().get("version", Integer.class);
+    }
+
+    private String normalize(String token) {
+        return token != null && token.startsWith("Bearer ") ? token.substring(7) : token;
     }
 }

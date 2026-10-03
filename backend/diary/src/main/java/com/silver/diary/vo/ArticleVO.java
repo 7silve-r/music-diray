@@ -7,6 +7,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true) // 继承父类字段
 public class ArticleVO extends Article {
+    private Long likeCount;
+    private Long favoriteCount;
+    private Long commentCount;
+    private boolean liked;
+    private boolean collected;
     private String cateName;
     private String authorAvatar;
     private String authorNickname;

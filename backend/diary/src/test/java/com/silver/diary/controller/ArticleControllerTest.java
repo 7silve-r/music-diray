@@ -24,7 +24,7 @@ class ArticleControllerTest {
     }
     ArticlePublishDto draft() {
         var dto = new ArticlePublishDto(); dto.setTitle("今天"); dto.setContent("正文");
-        dto.setCateId(7); dto.setState("草稿"); return dto;
+        dto.setCateId(7); dto.setState("私有"); return dto;
     }
     Article stored(int owner) {
         var article = new Article(); article.setId(10); article.setCreateUser(owner);
@@ -41,7 +41,7 @@ class ArticleControllerTest {
         assertThrows(BusinessException.class, () -> controller.publish(dto, "token")); verifyNoInteractions(uploads);
     }
     @Test void badState() {
-        var dto = draft(); dto.setState("公开");
+        var dto = draft(); dto.setState("草稿");
         assertThrows(BusinessException.class, () -> controller.publish(dto, "token")); verifyNoInteractions(uploads);
     }
     @Test void foreignCate() {

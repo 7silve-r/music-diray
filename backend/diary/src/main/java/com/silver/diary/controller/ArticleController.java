@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@org.springframework.security.access.prepost.PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("/my")
 public class ArticleController {
@@ -173,7 +174,7 @@ public class ArticleController {
         if (dto.getContent() == null ||
                 dto.getContent().isBlank() ||
                 dto.getContent().length() > 200000) throw new BusinessException("正文不能为空或超过20万字符");
-        if (!"草稿".equals(dto.getState()) && !"已发布".equals(dto.getState())) {
+        if (!"私有".equals(dto.getState()) && !"公开".equals(dto.getState())) {
             throw new BusinessException("状态不合法");
         }
         Category category = dto.getCateId() == null ?

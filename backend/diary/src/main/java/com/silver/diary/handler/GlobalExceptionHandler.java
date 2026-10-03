@@ -89,6 +89,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 headers, status, request);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Result<Void>> handleAccess(Exception ex) {
+        return ResponseEntity.status(403).body(error(403, "没有权限执行此操作"));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Result<Void>> handleUnexpected(Exception ex) {
         log.error("未处理的服务端异常", ex);
