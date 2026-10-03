@@ -15,6 +15,8 @@ import java.util.List;
 
 @Mapper
 public interface SongMapper extends BaseMapper<Song> {
+    @org.apache.ibatis.annotations.Select("SELECT * FROM tb_song WHERE id = #{id} FOR UPDATE")
+    Song lock(Long id);
 
     @Select("""
                 SELECT
@@ -82,7 +84,7 @@ public interface SongMapper extends BaseMapper<Song> {
 
     SongDetailVO getSongDetailById(Long songId);
 
-    IPage<SongVO> getSongsByIds(Page<SongVO> page,
+    IPage<SongVO> getSongsByIds(@Param("userId") Long userId, Page<SongVO> page,
                                 @Param("songIds") List<Long> songIds,
                                 @Param("songName") String songName,
                                 @Param("artistName") String artistName,

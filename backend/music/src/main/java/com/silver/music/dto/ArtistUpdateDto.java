@@ -13,8 +13,12 @@ public class ArtistUpdateDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @jakarta.validation.constraints.NotNull
+    @jakarta.validation.constraints.Positive
     private Long artistId;
 
+    @jakarta.validation.constraints.NotBlank
+    @jakarta.validation.constraints.Size(max = 100)
     private String artistName;
 
     private Integer gender;

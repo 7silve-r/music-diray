@@ -38,27 +38,27 @@ public class AdminController {
     }
 
     @PostMapping("/getAllArtists")
-    public Result<PageResult<Artist>> getAllArtists(@RequestBody ArtistDto artistDto) {
+    public Result<PageResult<Artist>> getAllArtists(@RequestBody @jakarta.validation.Valid ArtistDto artistDto) {
         return artistService.getAllArtistsAndDetail(artistDto);
     }
 
     @PostMapping("/addArtist")
-    public Result addArtist(@RequestBody ArtistAddDto artistAddDto) {
+    public Result<Void> addArtist(@RequestBody @jakarta.validation.Valid ArtistAddDto artistAddDto) {
         return artistService.addArtist(artistAddDto);
     }
 
     @PutMapping("/updateArtist")
-    public Result updateArtist(@RequestBody ArtistUpdateDto artistUpdateDto) {
+    public Result<Void> updateArtist(@RequestBody @jakarta.validation.Valid ArtistUpdateDto artistUpdateDto) {
         return artistService.updateArtist(artistUpdateDto);
     }
 
     @DeleteMapping("/deleteArtist/{id}")
-    public Result deleteArtist(@PathVariable("id") Long artistId) {
+    public Result<Void> deleteArtist(@PathVariable("id") Long artistId) {
         return artistService.deleteArtist(artistId);
     }
 
     @DeleteMapping("/deleteArtists")
-    public Result deleteArtists(@RequestBody List<Long> artistIds) {
+    public Result<Void> deleteArtists(@RequestBody List<Long> artistIds) {
         return artistService.deleteArtists(artistIds);
     }
 
@@ -73,27 +73,27 @@ public class AdminController {
     }
 
     @PostMapping("/getAllSongsByArtist")
-    public Result<PageResult<SongAdminVO>> getAllSongsByArtist(@RequestBody SongAndArtistDto songDto) {
+    public Result<PageResult<SongAdminVO>> getAllSongsByArtist(@RequestBody @jakarta.validation.Valid SongAndArtistDto songDto) {
         return songService.getAllSongsByArtist(songDto);
     }
 
     @PostMapping("/addSong")
-    public Result addSong(@RequestBody SongAddDto songAddDto) {
+    public Result<Void> addSong(@RequestBody @jakarta.validation.Valid SongAddDto songAddDto) {
         return songService.addSong(songAddDto);
     }
 
     @PutMapping("/updateSong")
-    public Result UpdateSong(@RequestBody SongUpdateDto songUpdateDto) {
+    public Result<Void> updateSong(@RequestBody @jakarta.validation.Valid SongUpdateDto songUpdateDto) {
         return songService.updateSong(songUpdateDto);
     }
 
     @DeleteMapping("/deleteSong/{id}")
-    public Result deleteSong(@PathVariable("id") Long songId) {
+    public Result<Void> deleteSong(@PathVariable("id") Long songId) {
         return songService.deleteSong(songId);
     }
 
     @DeleteMapping("/deleteSongs")
-    public Result deleteSongs(@RequestBody List<Long> songIds) {
+    public Result<Void> deleteSongs(@RequestBody List<Long> songIds) {
         return songService.deleteSongs(songIds);
     }
 
@@ -103,27 +103,27 @@ public class AdminController {
     }
 
     @PostMapping("/getAllPlaylists")
-    public Result<PageResult<Playlist>> getAllPlaylists(@RequestBody PlaylistDto playlistDto) {
+    public Result<PageResult<Playlist>> getAllPlaylists(@RequestBody @jakarta.validation.Valid PlaylistDto playlistDto) {
         return playlistService.getAllPlaylistsInfo(playlistDto);
     }
 
     @PostMapping("/addPlaylist")
-    public Result addPlaylist(@RequestBody PlaylistAddDto playlistAddDto) {
+    public Result<Void> addPlaylist(@RequestBody @jakarta.validation.Valid PlaylistAddDto playlistAddDto) {
         return playlistService.addPlaylist(playlistAddDto);
     }
 
     @PutMapping("/updatePlaylist")
-    public Result updatePlaylist(@RequestBody PlaylistUpdateDto playlistUpdateDto) {
+    public Result<Void> updatePlaylist(@RequestBody @jakarta.validation.Valid PlaylistUpdateDto playlistUpdateDto) {
         return playlistService.updatePlaylist(playlistUpdateDto);
     }
 
     @DeleteMapping("/deletePlaylist/{id}")
-    public Result deletePlaylist(@PathVariable("id") Long playlistId) {
+    public Result<Void> deletePlaylist(@PathVariable("id") Long playlistId) {
         return playlistService.deletePlaylist(playlistId);
     }
 
     @DeleteMapping("/deletePlaylists")
-    public Result deletePlaylists(@RequestBody List<Long> playlistIds) {
+    public Result<Void> deletePlaylists(@RequestBody List<Long> playlistIds) {
         return playlistService.deletePlaylists(playlistIds);
     }
 

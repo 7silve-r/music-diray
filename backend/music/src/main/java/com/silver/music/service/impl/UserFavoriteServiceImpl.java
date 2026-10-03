@@ -25,9 +25,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -58,7 +55,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
         }
 
         Page<SongVO> page = new Page<>(songDto.getPageNum(), songDto.getPageSize());
-        IPage<SongVO> songPage = songMapper.getSongsByIds(
+        IPage<SongVO> songPage = songMapper.getSongsByIds(userId,
                 page,
                 favoriteSongIds,
                 songDto.getSongName(),
@@ -75,7 +72,9 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
 
     @Override
 
-    public Result collectSong(Long songId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> collectSong(Long songId) {
+        if (songMapper.lock(songId) == null) throw new BusinessException(404, "歌曲不存在");
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
         Long userId = TypeConversionUtil.toLong(userIdObj);
@@ -83,7 +82,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
         QueryWrapper<UserFavorite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("type", 0).eq("song_id", songId);
         if (userFavoriteMapper.selectCount(queryWrapper) > 0) {
-            throw new BusinessException(MessageConstant.ADD + MessageConstant.FAILED);
+            return Result.success();
         }
 
         UserFavorite userFavorite = new UserFavorite();
@@ -98,16 +97,14 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
 
     @Override
 
-    public Result cancelCollectSong(Long songId) {
+    public Result<Void> cancelCollectSong(Long songId) {
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
         Long userId = TypeConversionUtil.toLong(userIdObj);
 
         QueryWrapper<UserFavorite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("type", 0).eq("song_id", songId);
-        if (userFavoriteMapper.delete(queryWrapper) == 0) {
-            throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
-        }
+        userFavoriteMapper.delete(queryWrapper);
 
         return Result.success(MessageConstant.DELETE + MessageConstant.SUCCESS, null);
     }
@@ -137,7 +134,9 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
 
     @Override
 
-    public Result collectPlaylist(Long playlistId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> collectPlaylist(Long playlistId) {
+        if (playlistMapper.lock(playlistId) == null) throw new BusinessException(404, "歌单不存在");
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
         Long userId = TypeConversionUtil.toLong(userIdObj);
@@ -145,7 +144,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
         QueryWrapper<UserFavorite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("type", 1).eq("playlist_id", playlistId);
         if (userFavoriteMapper.selectCount(queryWrapper) > 0) {
-            throw new BusinessException(MessageConstant.ADD + MessageConstant.FAILED);
+            return Result.success();
         }
 
         UserFavorite userFavorite = new UserFavorite();
@@ -160,16 +159,14 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
 
     @Override
 
-    public Result cancelCollectPlaylist(Long playlistId) {
+    public Result<Void> cancelCollectPlaylist(Long playlistId) {
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
         Long userId = TypeConversionUtil.toLong(userIdObj);
 
         QueryWrapper<UserFavorite> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("type", 1).eq("playlist_id", playlistId);
-        if (userFavoriteMapper.delete(queryWrapper) == 0) {
-            throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
-        }
+        userFavoriteMapper.delete(queryWrapper);
 
         return Result.success(MessageConstant.DELETE + MessageConstant.SUCCESS, null);
     }

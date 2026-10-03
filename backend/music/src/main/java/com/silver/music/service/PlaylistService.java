@@ -25,14 +25,14 @@ public interface PlaylistService extends IService<Playlist> {
 
     Result<Long> getAllPlaylistsCount(String style);
 
-    Result addPlaylist(PlaylistAddDto playlistAddDto);
+    Result<Void> addPlaylist(PlaylistAddDto playlistAddDto);
 
-    Result updatePlaylist(PlaylistUpdateDto playlistUpdateDto);
+    Result<Void> updatePlaylist(PlaylistUpdateDto playlistUpdateDto);
 
-    Result updatePlaylistCover(Long playlistId, String coverUrl);
+    Result<Void> updatePlaylistCover(Long playlistId, String coverUrl);
 
-    Result deletePlaylist(Long playlistId);
+    Result<Void> deletePlaylist(Long playlistId);
 
-    Result deletePlaylists(List<Long> playlistIds);
+    Result<Void> deletePlaylists(List<Long> playlistIds);
 
 }

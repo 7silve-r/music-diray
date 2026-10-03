@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serial;
 import java.io.Serializable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+
 
 @TableName("tb_playlist")
 public class Playlist implements Serializable {

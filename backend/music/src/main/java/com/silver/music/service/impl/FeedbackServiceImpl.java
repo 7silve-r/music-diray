@@ -17,9 +17,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -55,7 +52,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
 
     @Override
 
-    public Result deleteFeedback(Long feedbackId) {
+    public Result<Void> deleteFeedback(Long feedbackId) {
         if (feedbackMapper.deleteById(feedbackId) == 0) {
             throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
         }
@@ -64,7 +61,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
 
     @Override
 
-    public Result deleteFeedbacks(List<Long> feedbackIds) {
+    public Result<Void> deleteFeedbacks(List<Long> feedbackIds) {
         if (feedbackMapper.deleteByIds(feedbackIds) == 0) {
             throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
         }
@@ -73,7 +70,8 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
 
     @Override
 
-    public Result addFeedback(String content) {
+    public Result<Void> addFeedback(String content) {
+        if (content == null || content.isBlank() || content.length() > 255) throw new BusinessException("反馈须为1到255字");
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
         Long userId = TypeConversionUtil.toLong(userIdObj);

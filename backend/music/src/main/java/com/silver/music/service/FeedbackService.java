@@ -12,10 +12,10 @@ public interface FeedbackService extends IService<Feedback> {
 
     Result<PageResult<Feedback>> getAllFeedbacks(FeedbackDto feedbackDto);
 
-    Result deleteFeedback(Long feedbackId);
+    Result<Void> deleteFeedback(Long feedbackId);
 
-    Result deleteFeedbacks(List<Long> feedbackIds);
+    Result<Void> deleteFeedbacks(List<Long> feedbackIds);
 
-    Result addFeedback(String content);
+    Result<Void> addFeedback(String content);
 
 }

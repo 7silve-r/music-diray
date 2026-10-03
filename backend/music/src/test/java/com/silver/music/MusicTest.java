@@ -56,4 +56,43 @@ class MusicTest {
         mvc.perform(delete("/music/admin/deleteSong/1").header("Authorization", jwt.generateToken("ADMIN")))
                 .andExpect(status().isOk());
     }
+
+    @Test void repeatFavorite() throws Exception {
+        for (int i = 0; i < 2; i++) mvc.perform(post("/music/favorite/collectSong").param("songId", "1")
+                .header("Authorization", jwt.generateToken("writer01"))).andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM tb_user_favorite", Integer.class));
+    }
+    @Test void commentLikes() throws Exception {
+        jdbc.update("INSERT INTO tb_comment (id, user_id, song_id, content, create_time, type, like_count) VALUES (10, 1, 1, 'hi', CURRENT_TIMESTAMP, 0, 0)");
+        for (int i = 0; i < 2; i++) mvc.perform(patch("/music/comment/likeComment/10")
+                .header("Authorization", jwt.generateToken("ADMIN"))).andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(1, jdbc.queryForObject("SELECT like_count FROM tb_comment WHERE id = 10", Integer.class));
+        for (int i = 0; i < 2; i++) mvc.perform(patch("/music/comment/cancelLikeComment/10")
+                .header("Authorization", jwt.generateToken("ADMIN"))).andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(0, jdbc.queryForObject("SELECT like_count FROM tb_comment WHERE id = 10", Integer.class));
+    }
+    @Test void foreignComment() throws Exception {
+        jdbc.update("INSERT INTO tb_comment (id, user_id, song_id, content, create_time, type, like_count) VALUES (10, 2, 1, 'hi', CURRENT_TIMESTAMP, 0, 0)");
+        mvc.perform(delete("/music/comment/deleteComment/10").header("Authorization", jwt.generateToken("writer01")))
+                .andExpect(status().isForbidden());
+        mvc.perform(delete("/music/comment/deleteComment/10").header("Authorization", jwt.generateToken("ADMIN")))
+                .andExpect(status().isOk());
+    }
+    @Test void missing() throws Exception {
+        mvc.perform(get("/music/public/song/getSongDetail/999")).andExpect(status().isNotFound());
+        mvc.perform(get("/music/public/playlist/getPlaylistDetail/999")).andExpect(status().isNotFound());
+        mvc.perform(post("/music/favorite/collectSong").param("songId", "999")
+                .header("Authorization", jwt.generateToken("writer01"))).andExpect(status().isNotFound());
+    }
+    @Test void badComment() throws Exception {
+        mvc.perform(post("/music/comment/addSongComment").header("Authorization", jwt.generateToken("writer01"))
+                .contentType("application/json").content("{\"songId\":1,\"content\":\" \"}"))
+                .andExpect(status().isBadRequest());
+    }
+    @Test void favoritePage() throws Exception {
+        jdbc.update("INSERT INTO tb_user_favorite (user_id, song_id, type, create_time) VALUES (1,1,0,CURRENT_TIMESTAMP), (2,1,0,CURRENT_TIMESTAMP)");
+        mvc.perform(post("/music/favorite/getFavoriteSongs").header("Authorization", jwt.generateToken("writer01"))
+                .contentType("application/json").content("{\"pageNum\":1,\"pageSize\":10}"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.data.total").value(1));
+    }
 }

@@ -13,10 +13,13 @@ public class SongAndArtistDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotNull
-    private Integer pageNum;
+    @jakarta.validation.constraints.Min(1)
+    private Integer pageNum = 1;
 
     @NotNull
-    private Integer pageSize;
+    @jakarta.validation.constraints.Min(1)
+    @jakarta.validation.constraints.Max(100)
+    private Integer pageSize = 10;
 
     private Long artistId;
 

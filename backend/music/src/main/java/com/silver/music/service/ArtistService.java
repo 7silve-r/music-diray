@@ -28,14 +28,14 @@ public interface ArtistService extends IService<Artist> {
 
     Result<Long> getAllArtistsCount(Integer gender, String area);
 
-    Result addArtist(ArtistAddDto artistAddDto);
+    Result<Void> addArtist(ArtistAddDto artistAddDto);
 
-    Result updateArtist(ArtistUpdateDto artistUpdateDto);
+    Result<Void> updateArtist(ArtistUpdateDto artistUpdateDto);
 
-    Result updateArtistAvatar(Long artistId, String avatar);
+    Result<Void> updateArtistAvatar(Long artistId, String avatar);
 
-    Result deleteArtist(Long ArtistId);
+    Result<Void> deleteArtist(Long ArtistId);
 
-    Result deleteArtists(List<Long> artistIds);
+    Result<Void> deleteArtists(List<Long> artistIds);
 
 }

@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+
 
 @TableName("tb_feedback")
 public class Feedback implements Serializable {

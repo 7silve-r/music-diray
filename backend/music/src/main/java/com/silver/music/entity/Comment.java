@@ -11,10 +11,10 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+
 
 @TableName("tb_comment")
 public class Comment implements Serializable {

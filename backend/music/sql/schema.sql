@@ -117,9 +117,21 @@ CREATE TABLE IF NOT EXISTS `tb_user_favorite`  (
   INDEX `fk_user_favorite_user_id`(`user_id`) USING BTREE,
   INDEX `fk_user_favorite_song_id`(`song_id`) USING BTREE,
   INDEX `fk_user_favorite_playlist_id`(`playlist_id`) USING BTREE,
+  UNIQUE KEY favorite_song (user_id, song_id),
+  UNIQUE KEY favorite_playlist (user_id, playlist_id),
   CONSTRAINT `fk_user_favorite_playlist_id` FOREIGN KEY (`playlist_id`) REFERENCES `tb_playlist` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_user_favorite_song_id` FOREIGN KEY (`song_id`) REFERENCES `tb_song` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_user_favorite_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE IF NOT EXISTS `tb_comment_like` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `comment_id` bigint NOT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY comment_user (`comment_id`, `user_id`),
+  CONSTRAINT comment_like_comment FOREIGN KEY (`comment_id`) REFERENCES `tb_comment` (`id`) ON DELETE CASCADE,
+  CONSTRAINT comment_like_user FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE = InnoDB;

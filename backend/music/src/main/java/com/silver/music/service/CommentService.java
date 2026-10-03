@@ -8,14 +8,14 @@ import com.baomidou.mybatisplus.spring.service.IService;
 
 public interface CommentService extends IService<Comment> {
 
-    Result addSongComment(CommentSongDto commentSongDto);
+    Result<Void> addSongComment(CommentSongDto commentSongDto);
 
-    Result addPlaylistComment(CommentPlaylistDto commentPlaylistDto);
+    Result<Void> addPlaylistComment(CommentPlaylistDto commentPlaylistDto);
 
-    Result likeComment(Long commentId);
+    Result<Void> likeComment(Long commentId);
 
-    Result cancelLikeComment(Long commentId);
+    Result<Void> cancelLikeComment(Long commentId);
 
-    Result deleteComment(Long commentId);
+    Result<Void> deleteComment(Long commentId);
 
 }

@@ -6,14 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+
 
 @TableName("tb_artist")
 public class Artist implements Serializable {

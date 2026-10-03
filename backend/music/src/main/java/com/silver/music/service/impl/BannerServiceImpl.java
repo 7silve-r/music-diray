@@ -18,9 +18,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +53,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
 
-    public Result addBanner(String bannerUrl) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> addBanner(String bannerUrl) {
         Banner banner = new Banner();
         banner.setBannerUrl(bannerUrl);
         banner.setBannerStatus(BannerStatusEnum.ENABLE);
@@ -69,7 +67,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
 
-    public Result updateBanner(Long bannerId, String bannerUrl) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateBanner(Long bannerId, String bannerUrl) {
         Banner banner = bannerMapper.selectById(bannerId);
         if (banner == null) throw new BusinessException(404, "资源不存在");
         String oldBannerUrl = banner.getBannerUrl();
@@ -85,7 +84,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
 
-    public Result updateBannerStatus(Long bannerId, Integer bannerStatus) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateBannerStatus(Long bannerId, Integer bannerStatus) {
 
         BannerStatusEnum statusEnum;
         if (bannerStatus == 0) {
@@ -109,14 +109,15 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
 
-    public Result deleteBanner(Long bannerId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteBanner(Long bannerId) {
         Banner banner = bannerMapper.selectById(bannerId);
         if (banner == null) {
             throw new BusinessException(MessageConstant.DATA_NOT_FOUND);
         }
         String bannerUrl = banner.getBannerUrl();
         if (bannerUrl != null && !bannerUrl.isEmpty()) {
-            minioService.deleteFile(bannerUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, bannerUrl);
         }
 
         if (bannerMapper.deleteById(bannerId) == 0) {
@@ -127,7 +128,8 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
 
     @Override
 
-    public Result deleteBanners(List<Long> bannerIds) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteBanners(List<Long> bannerIds) {
         List<Banner> banners = bannerMapper.selectByIds(bannerIds);
         List<String> bannerUrlList = banners.stream()
                 .map(Banner::getBannerUrl)

@@ -60,7 +60,7 @@
         a.name AS artistName
         FROM tb_song s
         LEFT JOIN tb_artist a ON s.artist_id = a.id
-        LEFT JOIN tb_user_favorite u ON s.id = u.song_id
+
         WHERE
         <if test="songIds != null and songIds.size() > 0">
             s.id IN
@@ -77,7 +77,7 @@
         <if test="album != null and album.trim() != ''">
             AND s.album LIKE CONCAT('%', #{album}, '%')
         </if>
-        ORDER BY u.create_time DESC
+        ORDER BY (SELECT f.create_time FROM tb_user_favorite f WHERE f.song_id = s.id AND f.user_id = #{userId}) DESC
     </select>
 
 

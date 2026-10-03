@@ -13,14 +13,14 @@ public interface UserFavoriteService extends IService<UserFavorite> {
 
     Result<PageResult<SongVO>> getUserFavoriteSongs(SongDto songDto);
 
-    Result collectSong(Long songId);
+    Result<Void> collectSong(Long songId);
 
-    Result cancelCollectSong(Long songId);
+    Result<Void> cancelCollectSong(Long songId);
 
     Result<PageResult<PlaylistVO>> getUserFavoritePlaylists(PlaylistDto playlistDto);
 
-    Result collectPlaylist(Long playlistId);
+    Result<Void> collectPlaylist(Long playlistId);
 
-    Result cancelCollectPlaylist(Long playlistId);
+    Result<Void> cancelCollectPlaylist(Long playlistId);
 
 }

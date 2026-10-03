@@ -14,6 +14,8 @@ import java.util.List;
 
 @Mapper
 public interface PlaylistMapper extends BaseMapper<Playlist> {
+    @org.apache.ibatis.annotations.Select("SELECT * FROM tb_playlist WHERE id = #{id} FOR UPDATE")
+    Playlist lock(Long id);
 
     PlaylistDetailVO getPlaylistDetailById(Long playlistId);
 

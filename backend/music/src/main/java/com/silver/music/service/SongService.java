@@ -27,16 +27,16 @@ public interface SongService extends IService<Song> {
 
     Result<Long> getAllSongsCount(String style);
 
-    Result addSong(SongAddDto songAddDto);
+    Result<Void> addSong(SongAddDto songAddDto);
 
-    Result updateSong(SongUpdateDto songUpdateDto);
+    Result<Void> updateSong(SongUpdateDto songUpdateDto);
 
-    Result updateSongCover(Long songId, String coverUrl);
+    Result<Void> updateSongCover(Long songId, String coverUrl);
 
-    Result updateSongAudio(Long songId, String audioUrl, String duration);
+    Result<Void> updateSongAudio(Long songId, String audioUrl, String duration);
 
-    Result deleteSong(Long songId);
+    Result<Void> deleteSong(Long songId);
 
-    Result deleteSongs(List<Long> songIds);
+    Result<Void> deleteSongs(List<Long> songIds);
 
 }

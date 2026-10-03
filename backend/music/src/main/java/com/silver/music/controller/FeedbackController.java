@@ -19,25 +19,25 @@ public class FeedbackController {
 
     @PostMapping("/music/admin/getAllFeedbacks")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<PageResult<Feedback>> getAllFeedbacks(@RequestBody FeedbackDto feedbackDto) {
+    public Result<PageResult<Feedback>> getAllFeedbacks(@RequestBody @jakarta.validation.Valid FeedbackDto feedbackDto) {
         return feedbackService.getAllFeedbacks(feedbackDto);
     }
 
     @DeleteMapping("/music/admin/deleteFeedback/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result deleteFeedback(@PathVariable("id") Long feedbackId) {
+    public Result<Void> deleteFeedback(@PathVariable("id") Long feedbackId) {
         return feedbackService.deleteFeedback(feedbackId);
     }
 
     @DeleteMapping("/music/admin/deleteFeedbacks")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result deleteFeedbacks(@RequestBody List<Long> feedbackIds) {
+    public Result<Void> deleteFeedbacks(@RequestBody List<Long> feedbackIds) {
         return feedbackService.deleteFeedbacks(feedbackIds);
     }
 
     @PostMapping("/music/feedback/addFeedback")
     @PreAuthorize("hasRole('USER')")
-    public Result addFeedback(@RequestParam(value = "content") String content) {
+    public Result<Void> addFeedback(@RequestParam(value = "content") String content) {
         return feedbackService.addFeedback(content);
     }
 

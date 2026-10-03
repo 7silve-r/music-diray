@@ -34,9 +34,6 @@ import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 
 import org.springframework.stereotype.Service;
 
@@ -179,6 +176,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     @Override
     public Result<SongDetailVO> getSongDetail(Long songId, HttpServletRequest request) {
         SongDetailVO songDetailVO = songMapper.getSongDetailById(songId);
+        if (songDetailVO == null) throw new BusinessException(404, "歌曲不存在");
 
         String token = request.getHeader("Authorization");
         if (token != null && token.startsWith("Bearer ")) {
@@ -221,7 +219,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result addSong(SongAddDto songAddDto) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> addSong(SongAddDto songAddDto) {
         Song song = new Song();
         BeanUtils.copyProperties(songAddDto, song);
 
@@ -229,18 +228,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
             throw new BusinessException(MessageConstant.ADD + MessageConstant.FAILED);
         }
 
-        Song songInDB = songMapper.selectOne(new QueryWrapper<Song>()
-                .eq("artist_id", songAddDto.getArtistId())
-                .eq("name", songAddDto.getSongName())
-                .eq("album", songAddDto.getAlbum())
-                .orderByDesc("id")
-                .last("LIMIT 1"));
-
-        if (songInDB == null) {
-            throw new BusinessException(MessageConstant.SONG + MessageConstant.NOT_FOUND);
-        }
-
-        Long songId = songInDB.getSongId();
+        Long songId = song.getSongId();
 
         String styleStr = songAddDto.getStyle();
         if (styleStr != null && !styleStr.isEmpty()) {
@@ -261,7 +249,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result updateSong(SongUpdateDto songUpdateDto) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateSong(SongUpdateDto songUpdateDto) {
 
         Song songInDB = songMapper.selectById(songUpdateDto.getSongId());
         if (songInDB == null) {
@@ -297,7 +286,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result updateSongCover(Long songId, String coverUrl) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateSongCover(Long songId, String coverUrl) {
         Song song = songMapper.selectById(songId);
         if (song == null) throw new BusinessException(404, "资源不存在");
         String cover = song.getCoverUrl();
@@ -313,7 +303,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result updateSongAudio(Long songId, String audioUrl, String duration) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateSongAudio(Long songId, String audioUrl, String duration) {
         Song song = songMapper.selectById(songId);
         if (song == null) throw new BusinessException(404, "资源不存在");
         String audio = song.getAudioUrl();
@@ -330,7 +321,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result deleteSong(Long songId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteSong(Long songId) {
         Song song = songMapper.selectById(songId);
         if (song == null) {
             throw new BusinessException(MessageConstant.SONG + MessageConstant.NOT_FOUND);
@@ -339,10 +331,10 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
         String audio = song.getAudioUrl();
 
         if (cover != null && !cover.isEmpty()) {
-            minioService.deleteFile(cover);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, cover);
         }
         if (audio != null && !audio.isEmpty()) {
-            minioService.deleteFile(audio);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, audio);
         }
 
         if (songMapper.deleteById(songId) == 0) {
@@ -354,7 +346,8 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
 
-    public Result deleteSongs(List<Long> songIds) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteSongs(List<Long> songIds) {
 
         List<Song> songs = songMapper.selectByIds(songIds);
         List<String> coverUrlList = songs.stream()
@@ -367,10 +360,10 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
                 .toList();
 
         for (String coverUrl : coverUrlList) {
-            minioService.deleteFile(coverUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, coverUrl);
         }
         for (String audioUrl : audioUrlList) {
-            minioService.deleteFile(audioUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, audioUrl);
         }
 
         if (songMapper.deleteByIds(songIds) == 0) {

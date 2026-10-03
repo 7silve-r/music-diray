@@ -29,9 +29,6 @@ import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -165,6 +162,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     @Override
     public Result<PlaylistDetailVO> getPlaylistDetail(Long playlistId, HttpServletRequest request) {
         PlaylistDetailVO playlistDetailVO = playlistMapper.getPlaylistDetailById(playlistId);
+        if (playlistDetailVO == null) throw new BusinessException(404, "歌单不存在");
 
         List<SongVO> songVOList = playlistDetailVO.getSongs();
         songVOList.forEach(songVO -> songVO.setLikeStatus(LikeStatusEnum.DEFAULT.getId()));
@@ -225,15 +223,16 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
 
-    public Result addPlaylist(PlaylistAddDto playlistAddDTOO) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> addPlaylist(PlaylistAddDto playlistAddDto) {
         QueryWrapper<Playlist> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("title", playlistAddDTOO.getTitle());
+        queryWrapper.eq("title", playlistAddDto.getTitle());
         if (playlistMapper.selectCount(queryWrapper) > 0) {
             throw new BusinessException(MessageConstant.PLAYLIST + MessageConstant.ALREADY_EXISTS);
         }
 
         Playlist playlist = new Playlist();
-        BeanUtils.copyProperties(playlistAddDTOO, playlist);
+        BeanUtils.copyProperties(playlistAddDto, playlist);
         playlistMapper.insert(playlist);
 
         return Result.success(MessageConstant.ADD + MessageConstant.SUCCESS, null);
@@ -241,7 +240,8 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
 
-    public Result updatePlaylist(PlaylistUpdateDto playlistUpdateDto) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updatePlaylist(PlaylistUpdateDto playlistUpdateDto) {
         Long playlistId = playlistUpdateDto.getPlaylistId();
 
         Playlist playlistByTitle = playlistMapper.selectOne(new QueryWrapper<Playlist>().eq("title", playlistUpdateDto.getTitle()));
@@ -260,7 +260,8 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
 
-    public Result updatePlaylistCover(Long playlistId, String coverUrl) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updatePlaylistCover(Long playlistId, String coverUrl) {
         Playlist playlist = playlistMapper.selectById(playlistId);
         if (playlist == null) throw new BusinessException(404, "资源不存在");
         String cover = playlist.getCoverUrl();
@@ -276,7 +277,8 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
 
-    public Result deletePlaylist(Long playlistId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deletePlaylist(Long playlistId) {
 
         Playlist playlist = playlistMapper.selectById(playlistId);
         if (playlist == null) {
@@ -285,7 +287,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
         String coverUrl = playlist.getCoverUrl();
 
         if (coverUrl != null && !coverUrl.isEmpty()) {
-            minioService.deleteFile(coverUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, coverUrl);
         }
 
         if (playlistMapper.deleteById(playlistId) == 0) {
@@ -297,7 +299,8 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
 
     @Override
 
-    public Result deletePlaylists(List<Long> playlistIds) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deletePlaylists(List<Long> playlistIds) {
         List<Playlist> playlists = playlistMapper.selectBatchIds(playlistIds);
         List<String> coverUrlList = playlists.stream()
                 .map(Playlist::getCoverUrl)
@@ -305,7 +308,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
                 .toList();
 
         for (String coverUrl : coverUrlList) {
-            minioService.deleteFile(coverUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, coverUrl);
         }
 
         if (playlistMapper.deleteBatchIds(playlistIds) == 0) {

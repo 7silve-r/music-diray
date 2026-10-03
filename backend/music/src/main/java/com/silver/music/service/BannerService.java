@@ -13,15 +13,15 @@ public interface BannerService extends IService<Banner> {
 
     Result<PageResult<Banner>> getAllBanners(BannerDto bannerDto);
 
-    Result addBanner(String bannerUrl);
+    Result<Void> addBanner(String bannerUrl);
 
-    Result updateBanner(Long bannerId, String bannerUrl);
+    Result<Void> updateBanner(Long bannerId, String bannerUrl);
 
-    Result updateBannerStatus(Long bannerId, Integer bannerStatus);
+    Result<Void> updateBannerStatus(Long bannerId, Integer bannerStatus);
 
-    Result deleteBanner(Long bannerId);
+    Result<Void> deleteBanner(Long bannerId);
 
-    Result deleteBanners(List<Long> bannerIds);
+    Result<Void> deleteBanners(List<Long> bannerIds);
 
     Result<List<BannerVO>> getBannerList();
 }

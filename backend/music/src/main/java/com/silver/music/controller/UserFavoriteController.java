@@ -26,12 +26,12 @@ public class UserFavoriteController {
     }
 
     @PostMapping("/collectSong")
-    public Result collectSong(@RequestParam Long songId) {
+    public Result<Void> collectSong(@RequestParam Long songId) {
         return userFavoriteService.collectSong(songId);
     }
 
     @DeleteMapping("/cancelCollectSong")
-    public Result cancelCollectSong(@RequestParam Long songId) {
+    public Result<Void> cancelCollectSong(@RequestParam Long songId) {
         return userFavoriteService.cancelCollectSong(songId);
     }
 
@@ -41,12 +41,12 @@ public class UserFavoriteController {
     }
 
     @PostMapping("/collectPlaylist")
-    public Result collectPlaylist(@RequestParam Long playlistId) {
+    public Result<Void> collectPlaylist(@RequestParam Long playlistId) {
         return userFavoriteService.collectPlaylist(playlistId);
     }
 
     @DeleteMapping("/cancelCollectPlaylist")
-    public Result cancelCollectPlaylist(@RequestParam Long playlistId) {
+    public Result<Void> cancelCollectPlaylist(@RequestParam Long playlistId) {
         return userFavoriteService.cancelCollectPlaylist(playlistId);
     }
 }

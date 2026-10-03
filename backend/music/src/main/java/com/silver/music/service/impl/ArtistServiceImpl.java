@@ -30,9 +30,6 @@ import com.baomidou.mybatisplus.spring.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -152,6 +149,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     @Override
     public Result<ArtistDetailVO> getArtistDetail(Long artistId, HttpServletRequest request) {
         ArtistDetailVO artistDetailVO = artistMapper.getArtistDetailById(artistId);
+        if (artistDetailVO == null) throw new BusinessException(404, "歌手不存在");
 
         List<SongVO> songVOList = artistDetailVO.getSongs();
         songVOList.forEach(songVO -> songVO.setLikeStatus(LikeStatusEnum.DEFAULT.getId()));
@@ -208,7 +206,8 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
 
     @Override
 
-    public Result addArtist(ArtistAddDto artistAddDto) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> addArtist(ArtistAddDto artistAddDto) {
         QueryWrapper<Artist> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", artistAddDto.getArtistName());
         if (artistMapper.selectCount(queryWrapper) > 0) {
@@ -224,7 +223,8 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
 
     @Override
 
-    public Result updateArtist(ArtistUpdateDto artistUpdateDto) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateArtist(ArtistUpdateDto artistUpdateDto) {
         Long artistId = artistUpdateDto.getArtistId();
 
         Artist artistByArtistName = artistMapper.selectOne(new QueryWrapper<Artist>().eq("name", artistUpdateDto.getArtistName()));
@@ -243,7 +243,8 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
 
     @Override
 
-    public Result updateArtistAvatar(Long artistId, String avatar) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> updateArtistAvatar(Long artistId, String avatar) {
         Artist artist = artistMapper.selectById(artistId);
         if (artist == null) throw new BusinessException(404, "资源不存在");
         String avatarUrl = artist.getAvatar();
@@ -259,7 +260,8 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
 
     @Override
 
-    public Result deleteArtist(Long artistId) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteArtist(Long artistId) {
 
         Artist artist = artistMapper.selectById(artistId);
         if (artist == null) {
@@ -268,7 +270,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
         String avatarUrl = artist.getAvatar();
 
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
-            minioService.deleteFile(avatarUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, avatarUrl);
         }
 
         if (artistMapper.deleteById(artistId) == 0) {
@@ -280,7 +282,8 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
 
     @Override
 
-    public Result deleteArtists(List<Long> artistIds) {
+    @org.springframework.transaction.annotation.Transactional
+    public Result<Void> deleteArtists(List<Long> artistIds) {
 
         List<Artist> artists = artistMapper.selectByIds(artistIds);
         List<String> avatarUrlList = artists.stream()
@@ -289,7 +292,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
                 .toList();
 
         for (String avatarUrl : avatarUrlList) {
-            minioService.deleteFile(avatarUrl);
+            com.silver.music.upload.UploadCleanup.afterCommit(minioService, avatarUrl);
         }
 
         if (artistMapper.deleteByIds(artistIds) == 0) {
