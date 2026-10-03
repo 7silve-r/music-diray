@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `user` (
 id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(30) UNIQUE, password VARCHAR(255),
-nickname VARCHAR(100), email VARCHAR(254), user_pic VARCHAR(512), role VARCHAR(10) DEFAULT 'USER',
+nickname VARCHAR(100), email VARCHAR(254) UNIQUE, email_verified BOOLEAN DEFAULT FALSE, user_pic VARCHAR(512), role VARCHAR(10) DEFAULT 'USER',
 status INT DEFAULT 0, token_version INT DEFAULT 0, create_time TIMESTAMP, update_time TIMESTAMP);
 
 CREATE TABLE IF NOT EXISTS category (id INT AUTO_INCREMENT PRIMARY KEY, cate_name VARCHAR(50), cate_alias VARCHAR(50), create_user INT, create_time TIMESTAMP, update_time TIMESTAMP);
@@ -48,4 +48,15 @@ CREATE TABLE IF NOT EXISTS article_comment_like (
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
     ,
     UNIQUE (comment_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS email_code (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(254) NOT NULL,
+  purpose VARCHAR(10) NOT NULL,
+  code VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  sent_at TIMESTAMP NOT NULL,
+  attempts INT NOT NULL DEFAULT 0,
+  UNIQUE (email, purpose)
 );

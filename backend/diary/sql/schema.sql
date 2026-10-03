@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   token_version INT NOT NULL DEFAULT 0,
   password VARCHAR(255) NOT NULL,
   nickname VARCHAR(100),
-  email VARCHAR(254),
+  email VARCHAR(254) UNIQUE,
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   user_pic VARCHAR(512),
   create_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -81,4 +82,15 @@ CREATE TABLE IF NOT EXISTS article_comment_like (
     FOREIGN KEY (user_id) REFERENCES `user`(id) ON DELETE CASCADE
     ,
     UNIQUE (comment_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS email_code (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(254) NOT NULL,
+  purpose VARCHAR(10) NOT NULL,
+  code VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  sent_at TIMESTAMP NOT NULL,
+  attempts INT NOT NULL DEFAULT 0,
+  UNIQUE (email, purpose)
 );

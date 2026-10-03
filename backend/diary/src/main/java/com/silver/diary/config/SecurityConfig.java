@@ -18,6 +18,17 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @EnableMethodSecurity
 public class SecurityConfig {
     @Bean
+    public org.springframework.security.core.userdetails.UserDetailsService userDetails(UserService users) {
+        return username -> {
+            var user = users.lambdaQuery().eq(com.silver.diary.entity.User::getUsername, username).one();
+            if (user == null) throw new org.springframework.security.core.userdetails.UsernameNotFoundException("账号不存在");
+            return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                    .password(user.getPassword()).roles("USER", "ADMIN".equals(user.getRole()) ? "ADMIN" : "USER")
+                    .disabled(!Integer.valueOf(0).equals(user.getStatus())).build();
+        };
+    }
+
+    @Bean
     public SecurityFilterChain security(HttpSecurity http, JwtUtil jwt, UserService users,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
             @org.springframework.beans.factory.annotation.Value("${file.access-url-prefix}") String filePrefix) throws Exception {
@@ -26,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/error", "/api/reg", "/api/login", "/public/**",
+                        .requestMatchers("/error", "/api/reg", "/api/login", "/api/email/code", "/api/password/reset", "/public/**",
                                 "/music/public/**").permitAll()
                         .requestMatchers(HttpMethod.GET, filePrefix + "**").permitAll()
                         .anyRequest().authenticated())

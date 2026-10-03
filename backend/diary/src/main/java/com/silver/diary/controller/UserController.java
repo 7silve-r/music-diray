@@ -108,6 +108,7 @@ public class UserController {
         }
         user.setNickname(dto.getNickname());
         user.setEmail(dto.getEmail());
+        user.setEmailVerified(false);
         if (!userService.updateById(user)) {
             throw new BusinessException("操作未完成，数据可能以变化，请刷新后重试");
         }

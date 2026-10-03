@@ -20,6 +20,7 @@ public class User {
     private String password;
     private String nickname;
     private String email;
+    private Boolean emailVerified = false;
     private String userPic;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

@@ -43,6 +43,7 @@ public class AdminUserController {
     public Result<Void> update(@PathVariable Integer id, @RequestBody UserProfileUpdateDto dto) {
         User user = user(id);
         user.setNickname(dto.getNickname()); user.setEmail(dto.getEmail());
+        user.setEmailVerified(false);
         if (!userService.updateById(user)) throw new BusinessException("账号更新失败");
         return Result.success();
     }
