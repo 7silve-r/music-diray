@@ -3,7 +3,7 @@ admin:
 
 server:
   address: 127.0.0.1
-  port: ${DIARY_PORT:8081}
+  port: ${APP_PORT:8081}
 
 spring:
   datasource:
