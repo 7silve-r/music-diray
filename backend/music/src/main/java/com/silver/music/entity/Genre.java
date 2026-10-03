@@ -9,9 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import lombok.Data;
 
-
 @Data
-
 
 @TableName("tb_genre")
 public class Genre implements Serializable {

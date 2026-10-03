@@ -19,9 +19,12 @@ import java.time.LocalDateTime;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    @Autowired private EmailCodeMapper codeMapper;
-    @Autowired private UserService userService;
-    @Autowired private ObjectProvider<JavaMailSender> mail;
+    @Autowired
+    private EmailCodeMapper codeMapper;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ObjectProvider<JavaMailSender> mail;
     @Value("${spring.mail.username:}") private String sender;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     private final SecureRandom random = new SecureRandom();

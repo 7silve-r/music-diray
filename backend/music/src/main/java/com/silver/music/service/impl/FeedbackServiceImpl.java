@@ -31,7 +31,6 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     private FeedbackMapper feedbackMapper;
 
     @Override
-
     public Result<PageResult<Feedback>> getAllFeedbacks(FeedbackDto feedbackDto) {
 
         Page<Feedback> page = new Page<>(feedbackDto.getPageNum(), feedbackDto.getPageSize());
@@ -51,7 +50,6 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     }
 
     @Override
-
     public Result<Void> deleteFeedback(Long feedbackId) {
         if (feedbackMapper.deleteById(feedbackId) == 0) {
             throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
@@ -60,7 +58,6 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     }
 
     @Override
-
     public Result<Void> deleteFeedbacks(List<Long> feedbackIds) {
         if (feedbackMapper.deleteByIds(feedbackIds) == 0) {
             throw new BusinessException(MessageConstant.DELETE + MessageConstant.FAILED);
@@ -69,7 +66,6 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback> i
     }
 
     @Override
-
     public Result<Void> addFeedback(String content) {
         if (content == null || content.isBlank() || content.length() > 255) throw new BusinessException("反馈须为1到255字");
         Map<String, Object> map = CurrentUserUtil.get();

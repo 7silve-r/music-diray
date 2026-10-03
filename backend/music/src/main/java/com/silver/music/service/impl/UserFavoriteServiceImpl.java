@@ -1,5 +1,7 @@
 package com.silver.music.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.silver.diary.exception.BusinessException;
 
 import com.silver.music.constant.JwtClaimsConstant;
@@ -71,8 +73,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> collectSong(Long songId) {
         if (songMapper.lock(songId) == null) throw new BusinessException(404, "歌曲不存在");
         Map<String, Object> map = CurrentUserUtil.get();
@@ -96,7 +97,6 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     }
 
     @Override
-
     public Result<Void> cancelCollectSong(Long songId) {
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);
@@ -133,8 +133,7 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> collectPlaylist(Long playlistId) {
         if (playlistMapper.lock(playlistId) == null) throw new BusinessException(404, "歌单不存在");
         Map<String, Object> map = CurrentUserUtil.get();
@@ -158,7 +157,6 @@ public class UserFavoriteServiceImpl extends ServiceImpl<UserFavoriteMapper, Use
     }
 
     @Override
-
     public Result<Void> cancelCollectPlaylist(Long playlistId) {
         Map<String, Object> map = CurrentUserUtil.get();
         Object userIdObj = map.get(JwtClaimsConstant.USER_ID);

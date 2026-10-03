@@ -100,4 +100,10 @@ class ArticleSocialTest {
         mvc.perform(post("/my/article/10/comment").header("Authorization", token("reader01"))
                 .contentType("application/json").content("{\"content\":\" \"}")).andExpect(status().isBadRequest());
     }
+
+    @Test void protectOwner() throws Exception {
+        mvc.perform(delete("/admin/users/1").header("Authorization", token("ADMIN")))
+                .andExpect(status().isForbidden());
+        assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM `user` WHERE id = 1", Integer.class));
+    }
 }

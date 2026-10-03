@@ -1,5 +1,7 @@
 package com.silver.music.controller;
 
+import jakarta.validation.Valid;
+
 import com.silver.music.dto.BannerDto;
 import com.silver.music.entity.Banner;
 import com.silver.music.vo.BannerVO;
@@ -20,7 +22,7 @@ public class BannerController {
 
     @PostMapping("/music/admin/getAllBanners")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<PageResult<Banner>> getAllBanners(@RequestBody @jakarta.validation.Valid BannerDto bannerDto) {
+    public Result<PageResult<Banner>> getAllBanners(@RequestBody @Valid BannerDto bannerDto) {
         return bannerService.getAllBanners(bannerDto);
     }
 

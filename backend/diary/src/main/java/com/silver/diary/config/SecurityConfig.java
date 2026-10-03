@@ -1,5 +1,7 @@
 package com.silver.diary.config;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.silver.diary.exception.BusinessException;
 import com.silver.diary.service.UserService;
 import com.silver.diary.utils.JwtUtil;
@@ -31,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain security(HttpSecurity http, JwtUtil jwt, UserService users,
             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver,
-            @org.springframework.beans.factory.annotation.Value("${file.access-url-prefix}") String filePrefix) throws Exception {
+            @Value("${file.access-url-prefix}") String filePrefix) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .cors(cors -> { })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

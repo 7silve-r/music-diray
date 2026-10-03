@@ -18,12 +18,18 @@ import java.util.Objects;
 
 @Service
 public class ArticleSocialServiceImpl implements ArticleSocialService {
-    @Autowired private ArticleMapper articleMapper;
-    @Autowired private ArticleLikeMapper likeMapper;
-    @Autowired private ArticleFavoriteMapper favoriteMapper;
-    @Autowired private ArticleCommentMapper commentMapper;
-    @Autowired private ArticleCommentLikeMapper commentLikeMapper;
-    @Autowired private UserService userService;
+    @Autowired
+    private ArticleMapper articleMapper;
+    @Autowired
+    private ArticleLikeMapper likeMapper;
+    @Autowired
+    private ArticleFavoriteMapper favoriteMapper;
+    @Autowired
+    private ArticleCommentMapper commentMapper;
+    @Autowired
+    private ArticleCommentLikeMapper commentLikeMapper;
+    @Autowired
+    private UserService userService;
 
     private Article visible(Integer id, boolean lock) {
         Article article = lock ? articleMapper.lock(id) : articleMapper.selectById(id);

@@ -14,13 +14,14 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @Transactional
 class MusicTest {
     @Autowired WebApplicationContext context;
     @Autowired JdbcTemplate jdbc;
     @Autowired JwtUtil jwt;
+    @org.springframework.beans.factory.annotation.Value("${local.server.port}") int port;
     MockMvc mvc;
 
     @BeforeEach void setup() {
@@ -94,5 +95,35 @@ class MusicTest {
         mvc.perform(post("/music/favorite/getFavoriteSongs").header("Authorization", jwt.generateToken("writer01"))
                 .contentType("application/json").content("{\"pageNum\":1,\"pageSize\":10}"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.data.total").value(1));
+    }
+
+    @Test void oneServer() throws Exception {
+        var client = java.net.http.HttpClient.newHttpClient();
+        for (String path : new String[]{"/public/articles", "/music/public/styles"}) {
+            var request = java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://127.0.0.1:" + port + path)).GET().build();
+            var response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+            org.junit.jupiter.api.Assertions.assertEquals(200, response.statusCode());
+        }
+    }
+    @Test void binding() throws Exception {
+        mvc.perform(put("/music/admin/playlists/1/songs").header("Authorization", jwt.generateToken("ADMIN"))
+                .contentType("application/json").content("[1,1]")).andExpect(status().isOk());
+        mvc.perform(get("/music/public/playlist/getPlaylistDetail/1")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.songs.length()").value(1));
+        mvc.perform(put("/music/admin/playlists/1/songs").header("Authorization", jwt.generateToken("ADMIN"))
+                .contentType("application/json").content("[999]")).andExpect(status().isNotFound());
+        org.junit.jupiter.api.Assertions.assertEquals(1, jdbc.queryForObject("SELECT COUNT(*) FROM tb_playlist_binding", Integer.class));
+    }
+    @Test void adminAdd() throws Exception {
+        mvc.perform(post("/music/admin/addSong").header("Authorization", jwt.generateToken("ADMIN"))
+                .contentType("application/json").content("{\"artistId\":1,\"songName\":\"新歌\",\"album\":\"专辑\",\"releaseTime\":\"2026-10-03\"}"))
+                .andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(2, jdbc.queryForObject("SELECT COUNT(*) FROM tb_song", Integer.class));
+    }
+    @Test void uploadDenied() throws Exception {
+        var file = new org.springframework.mock.web.MockMultipartFile("file", "x.wav", "audio/wav", new byte[1]);
+        mvc.perform(multipart("/music/admin/songs/1/audio").file(file).param("duration", "1")
+                .with(request -> { request.setMethod("PUT"); return request; })
+                .header("Authorization", jwt.generateToken("writer01"))).andExpect(status().isForbidden());
     }
 }

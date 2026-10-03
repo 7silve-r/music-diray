@@ -1,5 +1,7 @@
 package com.silver.music.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.silver.diary.exception.BusinessException;
 
 import com.silver.music.constant.JwtClaimsConstant;
@@ -49,7 +51,6 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     private MinioService minioService;
 
     @Override
-
     public Result<PageResult<ArtistVO>> getAllArtists(ArtistDto artistDto) {
 
         Page<Artist> page = new Page<>(artistDto.getPageNum(), artistDto.getPageSize());
@@ -81,7 +82,6 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
     public Result<PageResult<Artist>> getAllArtistsAndDetail(ArtistDto artistDto) {
 
         Page<Artist> page = new Page<>(artistDto.getPageNum(), artistDto.getPageSize());
@@ -108,7 +108,6 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
     public Result<List<ArtistNameVO>> getAllArtistNames() {
         List<Artist> artists = artistMapper.selectList(new QueryWrapper<Artist>().orderByDesc("id"));
         if (artists.isEmpty()) {
@@ -205,8 +204,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> addArtist(ArtistAddDto artistAddDto) {
         QueryWrapper<Artist> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", artistAddDto.getArtistName());
@@ -222,8 +220,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateArtist(ArtistUpdateDto artistUpdateDto) {
         Long artistId = artistUpdateDto.getArtistId();
 
@@ -242,8 +239,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateArtistAvatar(Long artistId, String avatar) {
         Artist artist = artistMapper.selectById(artistId);
         if (artist == null) throw new BusinessException(404, "资源不存在");
@@ -259,8 +255,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteArtist(Long artistId) {
 
         Artist artist = artistMapper.selectById(artistId);
@@ -281,8 +276,7 @@ public class ArtistServiceImpl extends ServiceImpl<ArtistMapper, Artist> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteArtists(List<Long> artistIds) {
 
         List<Artist> artists = artistMapper.selectByIds(artistIds);

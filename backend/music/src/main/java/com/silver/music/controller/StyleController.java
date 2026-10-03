@@ -11,7 +11,8 @@ import java.util.List;
 
 @RestController
 public class StyleController {
-    @Autowired private StyleService styleService;
+    @Autowired
+    private StyleService styleService;
 
     @GetMapping("/music/public/styles")
     public Result<List<Style>> list() { return Result.success(styleService.list()); }

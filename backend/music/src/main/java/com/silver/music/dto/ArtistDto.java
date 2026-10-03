@@ -1,5 +1,9 @@
 package com.silver.music.dto;
 
+import jakarta.validation.constraints.Min;
+
+import jakarta.validation.constraints.Max;
+
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,12 +17,12 @@ public class ArtistDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotNull
-    @jakarta.validation.constraints.Min(1)
+    @Min(1)
     private Integer pageNum = 1;
 
     @NotNull
-    @jakarta.validation.constraints.Min(1)
-    @jakarta.validation.constraints.Max(100)
+    @Min(1)
+    @Max(100)
     private Integer pageSize = 10;
 
     private String artistName;

@@ -1,5 +1,7 @@
 package com.silver.music.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.silver.diary.exception.BusinessException;
 
 import com.silver.music.constant.JwtClaimsConstant;
@@ -106,7 +108,6 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
     public Result<PageResult<SongAdminVO>> getAllSongsByArtist(SongAndArtistDto songDto) {
 
         Page<SongAdminVO> page = new Page<>(songDto.getPageNum(), songDto.getPageSize());
@@ -218,8 +219,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> addSong(SongAddDto songAddDto) {
         Song song = new Song();
         BeanUtils.copyProperties(songAddDto, song);
@@ -248,8 +248,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateSong(SongUpdateDto songUpdateDto) {
 
         Song songInDB = songMapper.selectById(songUpdateDto.getSongId());
@@ -285,8 +284,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateSongCover(Long songId, String coverUrl) {
         Song song = songMapper.selectById(songId);
         if (song == null) throw new BusinessException(404, "资源不存在");
@@ -302,8 +300,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateSongAudio(Long songId, String audioUrl, String duration) {
         Song song = songMapper.selectById(songId);
         if (song == null) throw new BusinessException(404, "资源不存在");
@@ -320,8 +317,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteSong(Long songId) {
         Song song = songMapper.selectById(songId);
         if (song == null) {
@@ -345,8 +341,7 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteSongs(List<Long> songIds) {
 
         List<Song> songs = songMapper.selectByIds(songIds);

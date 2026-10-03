@@ -15,7 +15,7 @@ import java.util.List;
 
 @Mapper
 public interface SongMapper extends BaseMapper<Song> {
-    @org.apache.ibatis.annotations.Select("SELECT * FROM tb_song WHERE id = #{id} FOR UPDATE")
+    @Select("SELECT * FROM tb_song WHERE id = #{id} FOR UPDATE")
     Song lock(Long id);
 
     @Select("""

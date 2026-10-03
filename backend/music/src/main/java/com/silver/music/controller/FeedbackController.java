@@ -1,5 +1,7 @@
 package com.silver.music.controller;
 
+import jakarta.validation.Valid;
+
 import com.silver.music.dto.FeedbackDto;
 import com.silver.music.entity.Feedback;
 import com.silver.diary.common.PageResult;
@@ -19,7 +21,7 @@ public class FeedbackController {
 
     @PostMapping("/music/admin/getAllFeedbacks")
     @PreAuthorize("hasRole('ADMIN')")
-    public Result<PageResult<Feedback>> getAllFeedbacks(@RequestBody @jakarta.validation.Valid FeedbackDto feedbackDto) {
+    public Result<PageResult<Feedback>> getAllFeedbacks(@RequestBody @Valid FeedbackDto feedbackDto) {
         return feedbackService.getAllFeedbacks(feedbackDto);
     }
 

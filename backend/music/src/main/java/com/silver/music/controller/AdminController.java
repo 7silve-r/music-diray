@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("/music/admin")
 public class AdminController {
 
-@Autowired
+    @Autowired
     private ArtistService artistService;
     @Autowired
     private SongService songService;
@@ -38,17 +38,17 @@ public class AdminController {
     }
 
     @PostMapping("/getAllArtists")
-    public Result<PageResult<Artist>> getAllArtists(@RequestBody @jakarta.validation.Valid ArtistDto artistDto) {
+    public Result<PageResult<Artist>> getAllArtists(@RequestBody @Valid ArtistDto artistDto) {
         return artistService.getAllArtistsAndDetail(artistDto);
     }
 
     @PostMapping("/addArtist")
-    public Result<Void> addArtist(@RequestBody @jakarta.validation.Valid ArtistAddDto artistAddDto) {
+    public Result<Void> addArtist(@RequestBody @Valid ArtistAddDto artistAddDto) {
         return artistService.addArtist(artistAddDto);
     }
 
     @PutMapping("/updateArtist")
-    public Result<Void> updateArtist(@RequestBody @jakarta.validation.Valid ArtistUpdateDto artistUpdateDto) {
+    public Result<Void> updateArtist(@RequestBody @Valid ArtistUpdateDto artistUpdateDto) {
         return artistService.updateArtist(artistUpdateDto);
     }
 
@@ -73,17 +73,17 @@ public class AdminController {
     }
 
     @PostMapping("/getAllSongsByArtist")
-    public Result<PageResult<SongAdminVO>> getAllSongsByArtist(@RequestBody @jakarta.validation.Valid SongAndArtistDto songDto) {
+    public Result<PageResult<SongAdminVO>> getAllSongsByArtist(@RequestBody @Valid SongAndArtistDto songDto) {
         return songService.getAllSongsByArtist(songDto);
     }
 
     @PostMapping("/addSong")
-    public Result<Void> addSong(@RequestBody @jakarta.validation.Valid SongAddDto songAddDto) {
+    public Result<Void> addSong(@RequestBody @Valid SongAddDto songAddDto) {
         return songService.addSong(songAddDto);
     }
 
     @PutMapping("/updateSong")
-    public Result<Void> updateSong(@RequestBody @jakarta.validation.Valid SongUpdateDto songUpdateDto) {
+    public Result<Void> updateSong(@RequestBody @Valid SongUpdateDto songUpdateDto) {
         return songService.updateSong(songUpdateDto);
     }
 
@@ -103,17 +103,17 @@ public class AdminController {
     }
 
     @PostMapping("/getAllPlaylists")
-    public Result<PageResult<Playlist>> getAllPlaylists(@RequestBody @jakarta.validation.Valid PlaylistDto playlistDto) {
+    public Result<PageResult<Playlist>> getAllPlaylists(@RequestBody @Valid PlaylistDto playlistDto) {
         return playlistService.getAllPlaylistsInfo(playlistDto);
     }
 
     @PostMapping("/addPlaylist")
-    public Result<Void> addPlaylist(@RequestBody @jakarta.validation.Valid PlaylistAddDto playlistAddDto) {
+    public Result<Void> addPlaylist(@RequestBody @Valid PlaylistAddDto playlistAddDto) {
         return playlistService.addPlaylist(playlistAddDto);
     }
 
     @PutMapping("/updatePlaylist")
-    public Result<Void> updatePlaylist(@RequestBody @jakarta.validation.Valid PlaylistUpdateDto playlistUpdateDto) {
+    public Result<Void> updatePlaylist(@RequestBody @Valid PlaylistUpdateDto playlistUpdateDto) {
         return playlistService.updatePlaylist(playlistUpdateDto);
     }
 

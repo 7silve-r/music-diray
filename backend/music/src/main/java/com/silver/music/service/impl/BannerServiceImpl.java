@@ -1,5 +1,7 @@
 package com.silver.music.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.silver.diary.exception.BusinessException;
 
 import com.silver.music.constant.MessageConstant;
@@ -32,7 +34,6 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     private MinioService minioService;
 
     @Override
-
     public Result<PageResult<Banner>> getAllBanners(BannerDto bannerDto) {
 
         Page<Banner> page = new Page<>(bannerDto.getPageNum(), bannerDto.getPageSize());
@@ -52,8 +53,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> addBanner(String bannerUrl) {
         Banner banner = new Banner();
         banner.setBannerUrl(bannerUrl);
@@ -66,8 +66,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateBanner(Long bannerId, String bannerUrl) {
         Banner banner = bannerMapper.selectById(bannerId);
         if (banner == null) throw new BusinessException(404, "资源不存在");
@@ -83,8 +82,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updateBannerStatus(Long bannerId, Integer bannerStatus) {
 
         BannerStatusEnum statusEnum;
@@ -108,8 +106,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteBanner(Long bannerId) {
         Banner banner = bannerMapper.selectById(bannerId);
         if (banner == null) {
@@ -127,8 +124,7 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deleteBanners(List<Long> bannerIds) {
         List<Banner> banners = bannerMapper.selectByIds(bannerIds);
         List<String> bannerUrlList = banners.stream()
@@ -144,7 +140,6 @@ public class BannerServiceImpl extends ServiceImpl<BannerMapper, Banner> impleme
     }
 
     @Override
-
     public Result<List<BannerVO>> getBannerList() {
 
         List<Banner> banners = bannerMapper.selectList(new QueryWrapper<Banner>()

@@ -17,10 +17,14 @@ import java.util.Objects;
 
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
-    @Autowired private CommentMapper commentMapper;
-    @Autowired private CommentLikeMapper likeMapper;
-    @Autowired private SongMapper songMapper;
-    @Autowired private PlaylistMapper playlistMapper;
+    @Autowired
+    private CommentMapper commentMapper;
+    @Autowired
+    private CommentLikeMapper likeMapper;
+    @Autowired
+    private SongMapper songMapper;
+    @Autowired
+    private PlaylistMapper playlistMapper;
 
     private Result<Void> add(Long songId, Long playlistId, String content) {
         if (content == null || content.isBlank() || content.length() > 255) throw new BusinessException("评论须为1到255字");

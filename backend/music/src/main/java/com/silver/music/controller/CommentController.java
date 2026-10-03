@@ -1,5 +1,7 @@
 package com.silver.music.controller;
 
+import jakarta.validation.Valid;
+
 import com.silver.music.dto.CommentPlaylistDto;
 import com.silver.music.dto.CommentSongDto;
 import com.silver.diary.common.Result;
@@ -17,12 +19,12 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping("/addSongComment")
-    public Result<Void> addSongComment(@RequestBody @jakarta.validation.Valid CommentSongDto commentSongDto) {
+    public Result<Void> addSongComment(@RequestBody @Valid CommentSongDto commentSongDto) {
         return commentService.addSongComment(commentSongDto);
     }
 
     @PostMapping("/addPlaylistComment")
-    public Result<Void> addPlaylistComment(@RequestBody @jakarta.validation.Valid CommentPlaylistDto commentPlaylistDto) {
+    public Result<Void> addPlaylistComment(@RequestBody @Valid CommentPlaylistDto commentPlaylistDto) {
         return commentService.addPlaylistComment(commentPlaylistDto);
     }
 

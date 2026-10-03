@@ -1,5 +1,7 @@
 package com.silver.music.service.impl;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.silver.diary.exception.BusinessException;
 
 import com.silver.music.constant.JwtClaimsConstant;
@@ -49,7 +51,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     private MinioService minioService;
 
     @Override
-
     public Result<PageResult<PlaylistVO>> getAllPlaylists(PlaylistDto playlistDto) {
 
         Page<Playlist> page = new Page<>(playlistDto.getPageNum(), playlistDto.getPageSize());
@@ -78,7 +79,6 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
     public Result<PageResult<Playlist>> getAllPlaylistsInfo(PlaylistDto playlistDto) {
 
         Page<Playlist> page = new Page<>(playlistDto.getPageNum(), playlistDto.getPageSize());
@@ -222,8 +222,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> addPlaylist(PlaylistAddDto playlistAddDto) {
         QueryWrapper<Playlist> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("title", playlistAddDto.getTitle());
@@ -239,8 +238,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updatePlaylist(PlaylistUpdateDto playlistUpdateDto) {
         Long playlistId = playlistUpdateDto.getPlaylistId();
 
@@ -259,8 +257,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> updatePlaylistCover(Long playlistId, String coverUrl) {
         Playlist playlist = playlistMapper.selectById(playlistId);
         if (playlist == null) throw new BusinessException(404, "资源不存在");
@@ -276,8 +273,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deletePlaylist(Long playlistId) {
 
         Playlist playlist = playlistMapper.selectById(playlistId);
@@ -298,8 +294,7 @@ public class PlaylistServiceImpl extends ServiceImpl<PlaylistMapper, Playlist> i
     }
 
     @Override
-
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public Result<Void> deletePlaylists(List<Long> playlistIds) {
         List<Playlist> playlists = playlistMapper.selectBatchIds(playlistIds);
         List<String> coverUrlList = playlists.stream()

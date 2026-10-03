@@ -1,5 +1,13 @@
 package com.silver.music.dto;
 
+import jakarta.validation.constraints.Size;
+
+import jakarta.validation.constraints.Positive;
+
+import jakarta.validation.constraints.NotNull;
+
+import jakarta.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -13,22 +21,22 @@ public class SongAddDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @jakarta.validation.constraints.NotNull
-    @jakarta.validation.constraints.Positive
+    @NotNull
+    @Positive
     private Long artistId;
 
-    @jakarta.validation.constraints.NotBlank
-    @jakarta.validation.constraints.Size(max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String songName;
 
-    @jakarta.validation.constraints.NotBlank
-    @jakarta.validation.constraints.Size(max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String album;
 
     private String style;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @jakarta.validation.constraints.NotNull
+    @NotNull
     private LocalDate releaseTime;
 
 }

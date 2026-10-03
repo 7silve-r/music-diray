@@ -10,7 +10,8 @@ import java.util.List;
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
 public class PlaylistBindingController {
-    @Autowired private PlaylistBindingService playlistBindingService;
+    @Autowired
+    private PlaylistBindingService playlistBindingService;
 
     @PutMapping("/music/admin/playlists/{id}/songs")
     public Result<Void> update(@PathVariable Long id, @RequestBody List<Long> songIds) {

@@ -12,9 +12,7 @@ import java.io.Serializable;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-
 @Data
-
 
 @TableName("tb_comment")
 public class Comment implements Serializable {

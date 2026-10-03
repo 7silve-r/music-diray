@@ -1,5 +1,9 @@
 package com.silver.music.dto;
 
+import jakarta.validation.constraints.Size;
+
+import jakarta.validation.constraints.NotBlank;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -13,8 +17,8 @@ public class ArtistAddDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @jakarta.validation.constraints.NotBlank
-    @jakarta.validation.constraints.Size(max = 100)
+    @NotBlank
+    @Size(max = 100)
     private String artistName;
 
     private Integer gender;

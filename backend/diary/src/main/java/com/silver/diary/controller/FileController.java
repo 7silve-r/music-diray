@@ -16,7 +16,8 @@ import java.nio.file.*;
 public class FileController {
     @Value("${file.upload-dir}") private String directory;
     @Value("${file.access-url-prefix}") private String prefix;
-    @Autowired private ArticleService articleService;
+    @Autowired
+    private ArticleService articleService;
 
     @GetMapping("${file.access-url-prefix}{folder}/{name}")
     public ResponseEntity<Resource> file(@PathVariable String folder, @PathVariable String name) throws java.io.IOException {

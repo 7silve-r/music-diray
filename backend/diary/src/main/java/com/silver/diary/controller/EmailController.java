@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class EmailController {
-    @Autowired private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/api/email/code")
     public Result<Void> send(@RequestBody EmailDto dto) {

@@ -13,9 +13,12 @@ import java.util.List;
 
 @Service
 public class PlaylistBindingServiceImpl extends ServiceImpl<PlaylistBindingMapper, PlaylistBinding> implements PlaylistBindingService {
-    @Autowired private PlaylistMapper playlistMapper;
-    @Autowired private SongMapper songMapper;
-    @Autowired private PlaylistBindingMapper bindingMapper;
+    @Autowired
+    private PlaylistMapper playlistMapper;
+    @Autowired
+    private SongMapper songMapper;
+    @Autowired
+    private PlaylistBindingMapper bindingMapper;
 
     @Override
     @Transactional
